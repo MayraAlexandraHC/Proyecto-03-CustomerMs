@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: Customer Management API
+  description: API para gestión de clientes del banco XYZ
+  version: 1.0.0
+  contact:
+    name: Equipo de Desarrollo XYZ Bank
+    email: desarrollo@xyzbank.com
+
+servers:
+  - url: http://localhost:8585
+    description: Servidor de desarrollo
+
+paths:
+  /clientes:
+    post:
+      summary: Crear un nuevo cliente
+      operationId: crearCliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+      responses:
+        '201':
+          description: Cliente creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Listar todos los clientes
+      operationId: listarClientes
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cliente'
+
+  /clientes/{id}:
+    get:
+      summary: Obtener detalles de un cliente por ID
+      operationId: obtenerCliente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalles del cliente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+        '404':
+          description: Cliente no encontrado
+
+    put:
+      summary: Actualizar información de un cliente
+      operationId: actualizarCliente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+      responses:
+        '200':
+          description: Cliente actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Eliminar un cliente
+      operationId: eliminarCliente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Cliente eliminado exitosamente
+        '400':
+          description: Error al eliminar cliente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Cliente:
+      type: object
+      required:
+        - nombre
+        - apellido
+        - dni
+      properties:
+        id:
+          type: string
+          readOnly: true
+        nombre:
+          type: string
+          minLength: 2
+          maxLength: 50
+        apellido:
+          type: string
+          minLength: 2
+          maxLength: 50
+        dni:
+          type: string
+          minLength: 8
+          maxLength: 15
+        email:
+          type: string
+          format: email
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+        status:
+          type: integer
+          format: int32
